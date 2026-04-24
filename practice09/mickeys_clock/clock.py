@@ -1,77 +1,75 @@
-import pygame
 from datetime import datetime
+from pathlib import Path
+
+import pygame
 
 
-def crop_transparent(image):
-    rect = image.get_bounding_rect()
-    return image.subsurface(rect).copy()
+WINDOW_SIZE = (800, 600)
+FPS = 60
+BACKGROUND = (255, 255, 255)
+MINUTE_COLOR = (32, 32, 32)
+SECOND_COLOR = (220, 40, 40)
+CENTER_DOT_COLOR = (25, 25, 25)
 
 
-def blit_rotate_pivot(screen, image, pivot_world, pivot_image, angle):
-    image_rect = image.get_rect(topleft=(pivot_world[0] - pivot_image[0], pivot_world[1] - pivot_image[1]))
-    offset_center_to_pivot = pygame.math.Vector2(pivot_world) - image_rect.center
-    rotated_offset = offset_center_to_pivot.rotate(angle)
-    rotated_center = (pivot_world[0] - rotated_offset.x, pivot_world[1] - rotated_offset.y)
-
-    rotated_image = pygame.transform.rotozoom(image, -angle, 1)
-    rotated_rect = rotated_image.get_rect(center=rotated_center)
-
-    screen.blit(rotated_image, rotated_rect)
+def load_clock_face():
+    image_path = Path(__file__).resolve().parent / "images" / "mickeyclock.jpeg"
+    original = pygame.image.load(str(image_path)).convert()
+    face = pygame.transform.smoothscale(original, (620, 465))
+    face_rect = face.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2 - 20))
+    center = face_rect.center
+    return face, face_rect, center
 
 
-class MickeyClock:
-    def __init__(self, screen, center, background, right_hand, left_hand):
-        self.screen = screen
-        self.center = center
+def draw_hand(screen, center, angle, length, color, width):
+    hand_surface = pygame.Surface((width, length), pygame.SRCALPHA)
+    pygame.draw.rect(hand_surface, color, (0, 0, width, length), border_radius=2)
+    rotated_hand = pygame.transform.rotate(hand_surface, -angle)
 
-        self.background = pygame.transform.smoothscale(background, (700, 700))
-        self.bg_rect = self.background.get_rect(center=self.center)
+    offset = pygame.math.Vector2(0, -length / 2).rotate(angle)
+    hand_rect = rotated_hand.get_rect(center=(center[0] + offset.x, center[1] + offset.y))
+    screen.blit(rotated_hand, hand_rect)
 
-        self.right_hand = crop_transparent(right_hand)
-        self.left_hand = crop_transparent(left_hand)
 
-        self.right_hand = pygame.transform.smoothscale(
-            self.right_hand,
-            (
-                max(1, int(self.right_hand.get_width() * 0.55)),
-                max(1, int(self.right_hand.get_height() * 0.55))
-            )
-        )
-        self.left_hand = pygame.transform.smoothscale(
-            self.left_hand,
-            (
-                max(1, int(self.left_hand.get_width() * 0.50)),
-                max(1, int(self.left_hand.get_height() * 0.50))
-            )
-        )
+def draw_scene(screen, face, face_rect, center, font, small_font):
+    now = datetime.now()
 
-        self.pivot_world = (self.center[0], self.center[1] - 8)
+    minute_angle = now.minute * 6 + now.second * 0.1
+    second_angle = now.second * 6
 
-        self.right_pivot_image = (self.right_hand.get_width() - 12, self.right_hand.get_height() - 12)
-        self.left_pivot_image = (self.left_hand.get_width() // 2, self.left_hand.get_height() - 12)
+    screen.fill(BACKGROUND)
+    screen.blit(face, face_rect)
 
-    def draw(self):
-        now = datetime.now()
-        minute = now.minute
-        second = now.second
+    draw_hand(screen, center, minute_angle, 110, MINUTE_COLOR, 12)
+    draw_hand(screen, center, second_angle, 155, SECOND_COLOR, 10)
+    pygame.draw.circle(screen, CENTER_DOT_COLOR, center, 10)
 
-        minute_angle = minute * 6
-        second_angle = second * 6
+    time_text = font.render(now.strftime("%H:%M:%S"), True, (30, 30, 30))
+    info_text = small_font.render(
+        "Right-style hand = minutes, left-style hand = seconds", True, (60, 60, 60)
+    )
 
-        self.screen.blit(self.background, self.bg_rect)
+    screen.blit(time_text, time_text.get_rect(center=(WINDOW_SIZE[0] // 2, 40)))
+    screen.blit(info_text, info_text.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] - 35)))
 
-        blit_rotate_pivot(
-            self.screen,
-            self.right_hand,
-            self.pivot_world,
-            self.right_pivot_image,
-            minute_angle
-        )
 
-        blit_rotate_pivot(
-            self.screen,
-            self.left_hand,
-            self.pivot_world,
-            self.left_pivot_image,
-            second_angle
-        )
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode(WINDOW_SIZE)
+    pygame.display.set_caption("Mickey's Clock")
+    clock = pygame.time.Clock()
+    font = pygame.font.SysFont("arial", 28)
+    small_font = pygame.font.SysFont("arial", 22)
+    face, face_rect, center = load_clock_face()
+
+    done = False
+    while not done:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+
+        draw_scene(screen, face, face_rect, center, font, small_font)
+        pygame.display.flip()
+        clock.tick(FPS)
+
+    pygame.quit()

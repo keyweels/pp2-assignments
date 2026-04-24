@@ -1,37 +1,38 @@
 import pygame
 from ball import Ball
-
 pygame.init()
+ball = Ball()
 
-WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Moving Ball")
+width = 800
+height = 600
 
-clock = pygame.time.Clock()
+white = (255,255,255)
+red = (255,0,0)
+black = (0,0,0)
 
-ball = Ball(
-    x=WIDTH // 2,
-    y=HEIGHT // 2,
-    radius=25,
-    speed=20,
-    width=WIDTH,
-    height=HEIGHT
-)
+x = width // 2
+y = height // 2
+
+step = 5
+radius = 40
 
 running = True
 
-while running:
-    screen.fill((255, 255, 255))
+screen = pygame.display.set_mode((width,height))
 
+clock = pygame.time.Clock()
+
+while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
-
-    keys = pygame.key.get_pressed()
-    ball.move(keys)
-
+            running=False
+            
+    keyy = pygame.key.get_pressed()
+    ball.move(keyy,width,height)
+        
+    screen.fill(white)
+    
     ball.draw(screen)
-
     pygame.display.flip()
     clock.tick(60)
 

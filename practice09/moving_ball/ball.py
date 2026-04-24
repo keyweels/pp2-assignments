@@ -1,26 +1,21 @@
-import pygame
+import pygame 
 
 class Ball:
-    def __init__(self, x, y, radius, speed, width, height):
-        self.x = x
-        self.y = y
-        self.radius = radius
-        self.speed = speed
-        self.width = width
-        self.height = height
 
-    def move(self, keys):
-        if keys[pygame.K_LEFT] and self.x - self.radius - self.speed >= 0:
-            self.x -= self.speed
+    def __init__(self):
+        self.x = 400
+        self.y = 300
+        self.radius = 40
+        self.step = 5
 
-        if keys[pygame.K_RIGHT] and self.x + self.radius + self.speed <= self.width:
-            self.x += self.speed
-
-        if keys[pygame.K_UP] and self.y - self.radius - self.speed >= 0:
-            self.y -= self.speed
-
-        if keys[pygame.K_DOWN] and self.y + self.radius + self.speed <= self.height:
-            self.y += self.speed
-
-    def draw(self, screen):
-        pygame.draw.circle(screen, (255, 0, 0), (self.x, self.y), self.radius)
+    def move(self, keyy, width, height):
+        if keyy[pygame.K_UP] and self.y-self.step >= self.radius:
+            self.y-=self.step
+        if keyy[pygame.K_DOWN] and self.y+self.step <= height - self.radius:
+            self.y+=self.step
+        if keyy[pygame.K_RIGHT] and self.x+self.step <= width - self.radius:
+            self.x+=self.step
+        if keyy[pygame.K_LEFT] and self.x-self.step >= self.radius:
+            self.x-=self.step
+    def draw(self,screen):
+        pygame.draw.circle(screen,(255,0,0),(self.x,self.y),self.radius)
