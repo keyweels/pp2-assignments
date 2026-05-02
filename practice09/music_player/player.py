@@ -5,8 +5,8 @@ import os
 class Music:
     def __init__(self):
         self.playlist = [
-            "music/Caliente.mp3",
-            "music/Planovaia.mp3"
+            r"/Users/apple/Desktop/pp2-assignments/practice09/music_player/music/Caliente.mp3",
+            r"/Users/apple/Desktop/pp2-assignments/practice09/music_player/music/Planovaia.mp3"
         ]
         self.current_track = 0
         pygame.mixer.music.load(self.playlist[self.current_track])
