@@ -42,7 +42,10 @@ def get_or_create_player(username):
     if row:
         player_id = row[0]
     else:
-        cur.execute("INSERT INTO players (username) VALUES (%s) RETURNING id", (username,))
+        cur.execute(
+            "INSERT INTO players (username) VALUES (%s) RETURNING id",
+            (username,)
+        )
         player_id = cur.fetchone()[0]
         conn.commit()
 

@@ -4,7 +4,6 @@ from persistence import load_leaderboard, load_settings, save_settings
 from racer import run_game, WIDTH, HEIGHT
 from ui import Button, draw_center_text, draw_text, BLACK, WHITE, BLUE, GRAY, GREEN, RED
 
-
 pygame.init()
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -36,7 +35,7 @@ def ask_username():
                 if event.key == pygame.K_RETURN:
                     if name.strip() == "":
                         name = "Player"
-                    return name
+                    return name.strip()
 
                 elif event.key == pygame.K_BACKSPACE:
                     name = name[:-1]
@@ -102,6 +101,7 @@ def leaderboard_screen():
             draw_center_text(screen, "No scores yet", font, GRAY, 220)
 
         y = 135
+
         for index, item in enumerate(scores[:10], start=1):
             text = f"{index}. {item['name']} | Score: {item['score']} | Distance: {item['distance']}m"
             draw_text(screen, text, small_font, BLACK, 50, y)

@@ -13,22 +13,22 @@ pygame.display.set_caption("Racer Game")
 
 clock = pygame.time.Clock()
 
-image_background = pygame.image.load("resources/AnimatedStreet.png")
-image_player = pygame.image.load("resources/Player.png")
-image_enemy = pygame.image.load("resources/Enemy.png")
+image_background = pygame.image.load(r"/Users/apple/Desktop/pp2-assignments/practice11/Racer/resources/AnimatedStreet.png")
+image_player = pygame.image.load(r"/Users/apple/Desktop/pp2-assignments/practice11/Racer/resources/Player.png")
+image_enemy = pygame.image.load(r"/Users/apple/Desktop/pp2-assignments/practice11/Racer/resources/Enemy.png")
 
 coin_images = {
-    20: pygame.image.load("resources/20tg.png"),
-    50: pygame.image.load("resources/50tg.png"),
-    100: pygame.image.load("resources/100tg.png")
+    20: pygame.image.load(r"/Users/apple/Desktop/pp2-assignments/practice11/Racer/resources/20tg.png"),
+    50: pygame.image.load(r"/Users/apple/Desktop/pp2-assignments/practice11/Racer/resources/50tg.png"),
+    100: pygame.image.load(r"/Users/apple/Desktop/pp2-assignments/practice11/Racer/resources/100tg.png")
 }
 
-pygame.mixer.music.load("resources/background.wav")
+pygame.mixer.music.load(r"/Users/apple/Desktop/pp2-assignments/practice11/Racer/resources/background.wav")
 pygame.mixer.music.play(-1)
 
-sound_crash = pygame.mixer.Sound("resources/crash.wav")
-sound_get_tenge = pygame.mixer.Sound("resources/money.wav")
-sound_bip = pygame.mixer.Sound("resources/bip.wav")
+sound_crash = pygame.mixer.Sound(r"/Users/apple/Desktop/pp2-assignments/practice11/Racer/resources/crash.wav")
+sound_get_tenge = pygame.mixer.Sound(r"/Users/apple/Desktop/pp2-assignments/practice11/Racer/resources/money.wav")
+sound_bip = pygame.mixer.Sound(r"/Users/apple/Desktop/pp2-assignments/practice11/Racer/resources/bip.wav")
 
 font_game_over = pygame.font.SysFont("Verdana", 60)
 image_game_over = font_game_over.render("Game Over", True, "black")

@@ -4,12 +4,14 @@ from pathlib import Path
 
 from connect import get_connection
 
+BASE_DIR = Path(__file__).resolve().parent
+
 
 def run_sql_file(filename):
     conn = get_connection()
     cur = conn.cursor()
 
-    with open(filename, "r", encoding="utf-8") as file:
+    with open(BASE_DIR / filename, "r", encoding="utf-8") as file:
         cur.execute(file.read())
 
     conn.commit()
@@ -41,7 +43,6 @@ def add_contact():
     email = input("Email: ").strip()
     birthday = input("Birthday YYYY-MM-DD or empty: ").strip()
     group_name = input("Group Family/Work/Friend/Other: ").strip()
-
     phone = input("Phone: ").strip()
     phone_type = input("Phone type home/work/mobile: ").strip()
 
@@ -135,7 +136,7 @@ def search_contacts():
     conn = get_connection()
     cur = conn.cursor()
 
-    cur.execute("SELECT * FROM search_contacts(%s)", (query,))
+    cur.execute("SELECT * FROM search_contacts(%s::TEXT)", (query,))
     rows = cur.fetchall()
 
     print_rows(rows)
@@ -166,7 +167,7 @@ def filter_by_group():
         GROUP BY c.id, c.username, c.email, c.birthday, g.name
         ORDER BY c.username
         """,
-        (group_name,)
+        (f"%{group_name}%",)
     )
 
     rows = cur.fetchall()
@@ -220,7 +221,10 @@ def paginated_contacts():
         conn = get_connection()
         cur = conn.cursor()
 
-        cur.execute("SELECT * FROM get_contacts_page(%s, %s, %s)", (limit, offset, sort_by))
+        cur.execute(
+            "SELECT * FROM get_contacts_page(%s, %s, %s)",
+            (limit, offset, sort_by)
+        )
         rows = cur.fetchall()
 
         print(f"\nPage offset: {offset}")
@@ -233,10 +237,8 @@ def paginated_contacts():
 
         if command == "next":
             offset += limit
-
         elif command == "prev":
             offset = max(0, offset - limit)
-
         elif command == "quit":
             break
 
@@ -261,6 +263,8 @@ def export_json():
 
     if not filename:
         filename = "contacts.json"
+
+    file_path = BASE_DIR / filename
 
     conn = get_connection()
     cur = conn.cursor()
@@ -287,7 +291,10 @@ def export_json():
             (contact_id,)
         )
 
-        phones = [{"phone": phone, "type": phone_type} for phone, phone_type in cur.fetchall()]
+        phones = [
+            {"phone": phone, "type": phone_type}
+            for phone, phone_type in cur.fetchall()
+        ]
 
         contacts.append({
             "username": username,
@@ -297,23 +304,25 @@ def export_json():
             "phones": phones
         })
 
-    with open(filename, "w", encoding="utf-8") as file:
-        json.dump(contacts, file, indent=4)
+    with open(file_path, "w", encoding="utf-8") as file:
+        json.dump(contacts, file, indent=4, ensure_ascii=False)
 
     cur.close()
     conn.close()
 
-    print(f"Exported to {filename}")
+    print(f"Exported to {file_path}")
 
 
 def import_json():
     filename = input("JSON filename to import: ").strip()
 
-    if not Path(filename).exists():
+    file_path = BASE_DIR / filename
+
+    if not file_path.exists():
         print("File not found")
         return
 
-    with open(filename, "r", encoding="utf-8") as file:
+    with open(file_path, "r", encoding="utf-8") as file:
         contacts = json.load(file)
 
     conn = get_connection()
@@ -366,14 +375,16 @@ def import_json():
 def import_csv():
     filename = input("CSV filename, example contacts.csv: ").strip()
 
-    if not Path(filename).exists():
+    file_path = BASE_DIR / filename
+
+    if not file_path.exists():
         print("File not found")
         return
 
     conn = get_connection()
     cur = conn.cursor()
 
-    with open(filename, "r", encoding="utf-8") as file:
+    with open(file_path, "r", encoding="utf-8") as file:
         reader = csv.DictReader(file)
 
         for row in reader:
@@ -403,7 +414,10 @@ def import_csv():
 
             if phone:
                 cur.execute(
-                    "INSERT INTO phones (contact_id, phone, type) VALUES (%s, %s, %s)",
+                    """
+                    INSERT INTO phones (contact_id, phone, type)
+                    VALUES (%s, %s, %s)
+                    """,
                     (contact_id, phone, phone_type)
                 )
 

@@ -1,6 +1,7 @@
-import pygame
 import datetime
 from pathlib import Path
+
+import pygame
 
 from tools import (
     calculate_rect,
@@ -19,6 +20,8 @@ HEIGHT = 600
 FPS = 60
 BACKGROUND_COLOR = (255, 255, 255)
 
+BASE_DIR = Path(__file__).resolve().parent
+
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("TSIS2 Paint")
 clock = pygame.time.Clock()
@@ -27,17 +30,16 @@ font_ui = pygame.font.SysFont("Verdana", 20)
 font_small = pygame.font.SysFont("Verdana", 16)
 font_text = pygame.font.SysFont("Verdana", 28)
 
-BLACK   = (0, 0, 0)
-WHITE   = (255, 255, 255)
-GRAY    = (160, 160, 160)
-RED     = (255, 0, 0)
-GREEN   = (0, 180, 0)
-BLUE    = (0, 0, 255)
-YELLOW  = (255, 255, 0)
-ORANGE  = (255, 165, 0)
-PURPLE  = (128, 0, 128)
-PINK    = (255, 105, 180)
-BROWN   = (139, 69, 19)
+BLACK = (0, 0, 0)
+GRAY = (160, 160, 160)
+RED = (255, 0, 0)
+GREEN = (0, 180, 0)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+ORANGE = (255, 165, 0)
+PURPLE = (128, 0, 128)
+PINK = (255, 105, 180)
+BROWN = (139, 69, 19)
 
 color_map = {
     pygame.K_0: BLACK,
@@ -68,8 +70,6 @@ color_name_map = {
 tool = "pen"
 current_color = BLACK
 current_color_name = "BLACK"
-
-# TSIS brush sizes: small, medium, large
 thickness = 5
 
 drawing = False
@@ -77,47 +77,12 @@ start_pos = None
 prev_pos = None
 current_pos = None
 
-# Text tool variables
 typing = False
 text_input = ""
 text_position = None
 
-# base_layer stores permanent drawing.
-# Preview shapes are drawn on screen, then saved to base_layer after mouse release.
 base_layer = pygame.Surface((WIDTH, HEIGHT))
 base_layer.fill(BACKGROUND_COLOR)
-
-print("--- Instructions ---")
-print("W - Pen")
-print("L - Line")
-print("R - Rectangle")
-print("C - Circle")
-print("E - Eraser")
-print("S - Square")
-print("T - Right triangle")
-print("F - Equilateral triangle")
-print("D - Rhombus")
-print("B - Flood fill")
-print("X - Text tool")
-print("1 - Small brush  (2 px)")
-print("2 - Medium brush (5 px)")
-print("3 - Large brush  (10 px)")
-print("SPACE - Clear canvas")
-print("CTRL + S - Save canvas")
-print("ENTER - Confirm text")
-print("ESC - Cancel text")
-print("------ Colors ------")
-print("0 - Black")
-print("1 - Red")
-print("2 - Green")
-print("3 - Blue")
-print("4 - Yellow")
-print("5 - Orange")
-print("6 - Purple")
-print("7 - Pink")
-print("8 - Brown")
-print("9 - Gray")
-print("-------------------")
 
 
 def get_draw_color():
@@ -127,38 +92,42 @@ def get_draw_color():
 
 
 def save_canvas():
-
-    assets_dir = Path("assets")
+    assets_dir = BASE_DIR / "assets"
     assets_dir.mkdir(exist_ok=True)
 
     now = datetime.datetime.now()
     filename = assets_dir / f"canvas_{now.strftime('%Y%m%d_%H%M%S')}.png"
-    
+
     pygame.image.save(base_layer, filename)
     print(f"Saved: {filename}")
 
 
 def draw_ui():
-    panel_rect = pygame.Rect(WIDTH - 250, 10, 235, 150)
+    panel_rect = pygame.Rect(WIDTH - 255, 10, 240, 170)
     pygame.draw.rect(screen, (235, 235, 235), panel_rect)
     pygame.draw.rect(screen, BLACK, panel_rect, 2)
 
     tool_text = font_ui.render(f"Tool: {tool.upper()}", True, BLACK)
-    screen.blit(tool_text, (WIDTH - 235, 20))
-
-    thick_text = font_ui.render(f"Brush: {thickness}px", True, BLACK)
-    screen.blit(thick_text, (WIDTH - 235, 50))
-
+    brush_text = font_ui.render(f"Brush: {thickness}px", True, BLACK)
     color_text = font_ui.render(f"Color: {current_color_name}", True, BLACK)
-    screen.blit(color_text, (WIDTH - 235, 80))
+
+    screen.blit(tool_text, (WIDTH - 240, 20))
+    screen.blit(brush_text, (WIDTH - 240, 50))
+    screen.blit(color_text, (WIDTH - 240, 80))
 
     outer_rect = pygame.Rect(WIDTH - 75, 78, 40, 40)
     inner_rect = pygame.Rect(WIDTH - 70, 83, 30, 30)
+
     pygame.draw.rect(screen, GRAY, outer_rect)
     pygame.draw.rect(screen, current_color, inner_rect)
 
-    hint = font_small.render("W/L/R/C/E/S/T/F/D/B/X", True, BLACK)
-    screen.blit(hint, (WIDTH - 235, 120))
+    hint1 = font_small.render("W/L/R/C/E/S/T/F/D/B/X", True, BLACK)
+    hint2 = font_small.render("A/G/H = brush size", True, BLACK)
+    hint3 = font_small.render("Ctrl+S = save", True, BLACK)
+
+    screen.blit(hint1, (WIDTH - 240, 120))
+    screen.blit(hint2, (WIDTH - 240, 140))
+    screen.blit(hint3, (WIDTH - 240, 158))
 
 
 def finalize_shape():
@@ -198,12 +167,12 @@ def draw_shape_preview():
         rect = calculate_rect(start_pos, current_pos)
         pygame.draw.rect(screen, draw_color, rect, thickness)
 
-    elif tool == "circle":
-        draw_circle_by_points(screen, draw_color, start_pos, current_pos, thickness)
-
     elif tool == "square":
         rect = calculate_square(start_pos, current_pos)
         pygame.draw.rect(screen, draw_color, rect, thickness)
+
+    elif tool == "circle":
+        draw_circle_by_points(screen, draw_color, start_pos, current_pos, thickness)
 
     elif tool == "right_triangle":
         draw_right_triangle(screen, draw_color, start_pos, current_pos, thickness)
@@ -220,21 +189,40 @@ shape_tools = (
     "rect",
     "circle",
     "square",
-    "rhombus",
-    "equilateral_triangle",
     "right_triangle",
+    "equilateral_triangle",
+    "rhombus",
 )
 
+print("--- TSIS2 Paint Controls ---")
+print("W - Pen")
+print("L - Line")
+print("R - Rectangle")
+print("C - Circle")
+print("E - Eraser")
+print("S - Square")
+print("T - Right triangle")
+print("F - Equilateral triangle")
+print("D - Rhombus")
+print("B - Flood fill")
+print("X - Text")
+print("A - Small brush 2px")
+print("G - Medium brush 5px")
+print("H - Large brush 10px")
+print("0-9 - Colors")
+print("SPACE - Clear canvas")
+print("Ctrl + S - Save canvas")
+print("Enter - Confirm text")
+print("Escape - Cancel text")
 
 running = True
+
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
         elif event.type == pygame.KEYDOWN:
-
-            # Text mode should read normal characters before tool hotkeys.
             if typing:
                 if event.key == pygame.K_RETURN:
                     text_surface = font_text.render(text_input, True, current_color)
@@ -255,7 +243,6 @@ while running:
                     text_input += event.unicode
 
             else:
-                # Ctrl + S saves canvas with timestamp.
                 if event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
                     save_canvas()
 
@@ -303,18 +290,17 @@ while running:
                     tool = "text"
                     print("Tool: text")
 
-                # Brush size hotkeys.
-                elif event.key == pygame.K_F1:
+                elif event.key == pygame.K_a:
                     thickness = 2
-                    print("Brush size: small")
+                    print("Brush size: small 2px")
 
-                elif event.key == pygame.K_F2:
+                elif event.key == pygame.K_g:
                     thickness = 5
-                    print("Brush size: medium")
+                    print("Brush size: medium 5px")
 
-                elif event.key == pygame.K_F3:
+                elif event.key == pygame.K_h:
                     thickness = 10
-                    print("Brush size: large")
+                    print("Brush size: large 10px")
 
                 elif event.key == pygame.K_SPACE:
                     base_layer.fill(BACKGROUND_COLOR)
@@ -341,22 +327,26 @@ while running:
                     prev_pos = event.pos
                     current_pos = event.pos
 
-                    # Pen and eraser draw directly on the permanent layer.
                     if tool in ("pen", "eraser"):
                         pygame.draw.circle(
                             base_layer,
                             get_draw_color(),
                             event.pos,
-                            max(1, thickness // 2)
+                            max(1, thickness // 2),
                         )
 
         elif event.type == pygame.MOUSEMOTION:
             if drawing:
                 current_pos = event.pos
 
-                # Freehand tools draw continuously using previous and current mouse positions.
                 if tool in ("pen", "eraser"):
-                    pygame.draw.line(base_layer, get_draw_color(), prev_pos, current_pos, thickness)
+                    pygame.draw.line(
+                        base_layer,
+                        get_draw_color(),
+                        prev_pos,
+                        current_pos,
+                        thickness,
+                    )
                     prev_pos = current_pos
 
         elif event.type == pygame.MOUSEBUTTONUP:
@@ -364,7 +354,6 @@ while running:
                 if drawing:
                     current_pos = event.pos
 
-                    # Shape tools are finalized only after mouse release.
                     if tool in shape_tools:
                         finalize_shape()
 
@@ -375,11 +364,9 @@ while running:
 
     screen.blit(base_layer, (0, 0))
 
-    # Shape preview is drawn on screen only, not on base_layer.
     if drawing and tool in shape_tools and start_pos and current_pos:
         draw_shape_preview()
 
-    # Live preview for text tool.
     if typing and text_position:
         text_surface = font_text.render(text_input, True, current_color)
         screen.blit(text_surface, text_position)

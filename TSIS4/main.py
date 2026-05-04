@@ -31,7 +31,11 @@ class Button:
         screen.blit(image, image.get_rect(center=self.rect.center))
 
     def clicked(self, event):
-        return event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.rect.collidepoint(event.pos)
+        return (
+            event.type == pygame.MOUSEBUTTONDOWN
+            and event.button == 1
+            and self.rect.collidepoint(event.pos)
+        )
 
 
 def center_text(text, font_obj, color, y):
@@ -58,7 +62,7 @@ def ask_username():
                 if event.key == pygame.K_RETURN:
                     if username.strip() == "":
                         username = "Player"
-                    return username
+                    return username.strip()
 
                 elif event.key == pygame.K_BACKSPACE:
                     username = username[:-1]
@@ -93,10 +97,13 @@ def main_menu():
 
             if play.clicked(event):
                 return "play"
+
             if leaderboard.clicked(event):
                 return "leaderboard"
+
             if settings_btn.clicked(event):
                 return "settings"
+
             if quit_btn.clicked(event):
                 return "quit"
 
@@ -120,6 +127,7 @@ def leaderboard_screen():
             center_text(str(error)[:55], small_font, RED, 270)
 
         y = 125
+
         for index, row in enumerate(rows, start=1):
             username, score, level, played_at = row
             text = f"{index}. {username} | Score: {score} | Level: {level} | {played_at.strftime('%Y-%m-%d')}"
@@ -163,14 +171,14 @@ def settings_screen():
 
         grid_btn.text = f"Grid: {'ON' if settings['grid'] else 'OFF'}"
         sound_btn.text = f"Sound: {'ON' if settings['sound'] else 'OFF'}"
-        color_btn.text = f"Snake color:"
+        color_btn.text = "Snake color:"
 
-        color_preview_rect = pygame.Rect(440, 310, 40, 40)
-        pygame.draw.rect(screen, settings["snake_color"], color_preview_rect)
-        pygame.draw.rect(screen, BLACK, color_preview_rect, 2)
-        
         for btn in [grid_btn, sound_btn, color_btn, save_btn]:
             btn.draw()
+
+        color_preview_rect = pygame.Rect(440, 312, 40, 35)
+        pygame.draw.rect(screen, settings["snake_color"], color_preview_rect)
+        pygame.draw.rect(screen, BLACK, color_preview_rect, 2)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -187,6 +195,7 @@ def settings_screen():
                     index = colors.index(settings["snake_color"])
                 else:
                     index = 0
+
                 settings["snake_color"] = colors[(index + 1) % len(colors)]
 
             if save_btn.clicked(event):

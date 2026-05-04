@@ -1,4 +1,5 @@
 import math
+
 import pygame
 
 
@@ -39,6 +40,7 @@ def draw_rhombus(surface, color, start, end, width):
 
     center_x = (x1 + x2) // 2
     center_y = (y1 + y2) // 2
+
     half_width = abs(x2 - x1) // 2
     half_height = abs(y2 - y1) // 2
 
@@ -46,7 +48,7 @@ def draw_rhombus(surface, color, start, end, width):
         (center_x, center_y - half_height),
         (center_x + half_width, center_y),
         (center_x, center_y + half_height),
-        (center_x - half_width, center_y)
+        (center_x - half_width, center_y),
     ]
 
     pygame.draw.polygon(surface, color, points, width)
@@ -59,7 +61,7 @@ def draw_right_triangle(surface, color, start, end, width):
     points = [
         (x1, y1),
         (x2, y1),
-        (x1, y2)
+        (x1, y2),
     ]
 
     pygame.draw.polygon(surface, color, points, width)
@@ -78,7 +80,7 @@ def draw_equilateral_triangle(surface, color, start, end, width):
     points = [
         (x1, y1),
         (x1 - side // 2, y1 + height),
-        (x1 + side // 2, y1 + height)
+        (x1 + side // 2, y1 + height),
     ]
 
     pygame.draw.polygon(surface, color, points, width)
@@ -95,10 +97,10 @@ def draw_circle_by_points(surface, color, start, end, width=0):
 
 
 def flood_fill(surface, start_pos, fill_color):
-    width, height = surface.get_size()
+    surface_width, surface_height = surface.get_size()
     x, y = start_pos
 
-    if x < 0 or x >= width or y < 0 or y >= height:
+    if x < 0 or x >= surface_width or y < 0 or y >= surface_height:
         return
 
     target_color = surface.get_at((x, y))
@@ -112,7 +114,7 @@ def flood_fill(surface, start_pos, fill_color):
     while stack:
         px, py = stack.pop()
 
-        if px < 0 or px >= width or py < 0 or py >= height:
+        if px < 0 or px >= surface_width or py < 0 or py >= surface_height:
             continue
 
         if surface.get_at((px, py)) != target_color:

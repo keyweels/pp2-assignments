@@ -20,10 +20,15 @@ class Button:
 
         text_img = font.render(self.text, True, BLACK)
         text_rect = text_img.get_rect(center=self.rect.center)
+
         screen.blit(text_img, text_rect)
 
     def clicked(self, event):
-        return event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.rect.collidepoint(event.pos)
+        return (
+            event.type == pygame.MOUSEBUTTONDOWN
+            and event.button == 1
+            and self.rect.collidepoint(event.pos)
+        )
 
 
 def draw_center_text(screen, text, font, color, y):

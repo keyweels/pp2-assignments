@@ -1,7 +1,7 @@
 DB_CONFIG = {
     "host": "localhost",
     "database": "snake_tsis4",
-    "user": "postgres",
-    "password": "12345678",
+    "user": "apple",
+    "password": "",
     "port": 5432
 }

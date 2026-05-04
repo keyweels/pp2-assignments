@@ -1,8 +1,10 @@
 import json
 from pathlib import Path
 
-SETTINGS_FILE = Path("settings.json")
-LEADERBOARD_FILE = Path("leaderboard.json")
+BASE_DIR = Path(__file__).resolve().parent
+
+SETTINGS_FILE = BASE_DIR / "settings.json"
+LEADERBOARD_FILE = BASE_DIR / "leaderboard.json"
 
 DEFAULT_SETTINGS = {
     "sound": True,
@@ -28,7 +30,7 @@ def load_settings():
 
 def save_settings(settings):
     with open(SETTINGS_FILE, "w", encoding="utf-8") as file:
-        json.dump(settings, file, indent=4)
+        json.dump(settings, file, indent=4, ensure_ascii=False)
 
 
 def load_leaderboard():
@@ -42,7 +44,7 @@ def load_leaderboard():
 
 def save_leaderboard(scores):
     with open(LEADERBOARD_FILE, "w", encoding="utf-8") as file:
-        json.dump(scores, file, indent=4)
+        json.dump(scores, file, indent=4, ensure_ascii=False)
 
 
 def add_score(name, score, distance, coins):

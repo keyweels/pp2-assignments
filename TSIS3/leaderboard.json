@@ -1,44 +1,62 @@
 [
     {
-        "name": "\u0432\u0430\u043f",
+        "name": "вап",
         "score": 2035,
         "distance": 932,
         "coins": 18
     },
     {
-        "name": "\u0432\u0430\u043f",
+        "name": "вап",
         "score": 1063,
         "distance": 380,
         "coins": 8
     },
     {
-        "name": "\u043e\u0440\u043f\u0430\u0432",
+        "name": "zhaks",
+        "score": 1004,
+        "distance": 473,
+        "coins": 6
+    },
+    {
+        "name": "орпав",
         "score": 910,
         "distance": 389,
         "coins": 8
     },
     {
-        "name": "\u0430\u043f\u0440",
+        "name": "апр",
         "score": 752,
         "distance": 471,
         "coins": 5
     },
     {
-        "name": "\u0432\u0430\u043f",
+        "name": "zh",
+        "score": 690,
+        "distance": 366,
+        "coins": 7
+    },
+    {
+        "name": "вап",
         "score": 568,
         "distance": 387,
         "coins": 3
     },
     {
-        "name": "\u044b\u0432\u0430\u043f\u0440\u043e",
+        "name": "ывапро",
         "score": 566,
         "distance": 395,
         "coins": 4
     },
     {
-        "name": "\u0432\u0430\u043f",
-        "score": 178,
-        "distance": 124,
-        "coins": 1
+        "name": "zhaks",
+        "score": 213,
+        "distance": 152,
+        "coins": 2
+    },
+    {
+        "name": "zhaks",
+        "score": 201,
+        "distance": 229,
+        "coins": 0
     }
 ]

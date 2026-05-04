@@ -1,5 +1,5 @@
 {
-    "sound": false,
+    "sound": true,
     "car_color": "red",
-    "difficulty": "normal"
+    "difficulty": "easy"
 }
